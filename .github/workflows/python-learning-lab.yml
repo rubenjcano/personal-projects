@@ -1,0 +1,41 @@
+name: python-learning-lab CI
+
+on:
+  push:
+    paths:
+      - 'python-learning-lab/**'
+  pull_request:
+    paths:
+      - 'python-learning-lab/**'
+
+jobs:
+  test:
+    name: Tests · Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+
+    defaults:
+      run:
+        working-directory: python-learning-lab
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies (01-python-core)
+        run: pip install -r 01-python-core/requirements.txt
+
+      - name: Run tests
+        run: pytest 01-python-core/tests/ -v --tb=short
+
+      - name: Check formatting (ruff)
+        run: |
+          pip install ruff
+          ruff check 01-python-core/
